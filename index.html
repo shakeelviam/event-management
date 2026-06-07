@@ -230,7 +230,10 @@
 <div id="app">
   <header>
     <h1>&#128197; Event Management System</h1>
-    <span class="meta" id="headerMeta">Dubai, UAE &nbsp;|&nbsp; AED</span>
+    <div style="display:flex;align-items:center;gap:16px">
+      <span class="meta">Dubai, UAE &nbsp;|&nbsp; AED</span>
+      <button onclick="logout()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px;">Logout</button>
+    </div>
   </header>
 
   <nav>
@@ -631,6 +634,18 @@ async function login() {
   } catch (e) {
     err.textContent = 'Cannot connect. Check the URL and try again.';
   }
+}
+
+function logout() {
+  USERNAME = '';
+  PASSWORD = '';
+  sessionStorage.removeItem('username');
+  sessionStorage.removeItem('password');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginUsername').value = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginError').textContent = '';
 }
 
 function toggleUrlField(e) {
