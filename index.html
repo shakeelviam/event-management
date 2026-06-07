@@ -204,7 +204,7 @@
   <div class="login-card">
     <h1>Event Management</h1>
     <p>Accounting & Inventory System</p>
-    <div class="form-group" style="margin-bottom:12px">
+    <div id="urlGroup" class="form-group" style="margin-bottom:12px;display:none">
       <label>Apps Script URL</label>
       <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/..." />
     </div>
@@ -220,6 +220,9 @@
       Connect
     </button>
     <div id="loginError" style="color:var(--danger);margin-top:12px;font-size:13px;text-align:center"></div>
+    <div style="text-align:center;margin-top:14px">
+      <a href="#" id="changeUrlLink" onclick="toggleUrlField(event)" style="font-size:12px;color:var(--muted);text-decoration:none">⚙ Change server URL</a>
+    </div>
   </div>
 </div>
 
@@ -600,12 +603,13 @@ const state = {
 // AUTH
 // ============================================================
 async function login() {
-  const url  = document.getElementById('scriptUrl').value.trim();
+  const url  = document.getElementById('scriptUrl').value.trim() || localStorage.getItem('scriptUrl') || '';
   const user = document.getElementById('loginUsername').value.trim();
   const pass = document.getElementById('loginPassword').value;
   const err  = document.getElementById('loginError');
 
-  if (!url || !user || !pass) { err.textContent = 'Please enter URL, username, and password.'; return; }
+  if (!url)  { err.textContent = 'Please enter the Apps Script URL first.'; toggleUrlField(); return; }
+  if (!user || !pass) { err.textContent = 'Please enter your username and password.'; return; }
 
   err.textContent = 'Connecting…';
   try {
@@ -615,7 +619,7 @@ async function login() {
       SCRIPT_URL = url;
       USERNAME   = user;
       PASSWORD   = pass;
-      sessionStorage.setItem('scriptUrl', url);
+      localStorage.setItem('scriptUrl', url);
       sessionStorage.setItem('username', user);
       sessionStorage.setItem('password', pass);
       document.getElementById('loginScreen').style.display = 'none';
@@ -629,12 +633,22 @@ async function login() {
   }
 }
 
+function toggleUrlField(e) {
+  if (e) e.preventDefault();
+  const group = document.getElementById('urlGroup');
+  const isHidden = group.style.display === 'none';
+  group.style.display = isHidden ? 'flex' : 'none';
+  group.style.flexDirection = 'column';
+  if (isHidden) document.getElementById('scriptUrl').focus();
+}
+
 // Restore session
 window.addEventListener('DOMContentLoaded', () => {
-  const url  = sessionStorage.getItem('scriptUrl');
+  const url  = localStorage.getItem('scriptUrl');
   const user = sessionStorage.getItem('username');
   const pass = sessionStorage.getItem('password');
-  if (url)  document.getElementById('scriptUrl').value    = url;
+  if (url)  document.getElementById('scriptUrl').value     = url;
+  else      document.getElementById('urlGroup').style.display = 'flex', document.getElementById('urlGroup').style.flexDirection = 'column';
   if (user) document.getElementById('loginUsername').value = user;
   if (pass) document.getElementById('loginPassword').value = pass;
 
